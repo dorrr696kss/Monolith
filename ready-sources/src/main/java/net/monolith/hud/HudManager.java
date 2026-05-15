@@ -41,36 +41,31 @@ public class HudManager {
                   );
                   HudManager.pingAnim = HudManager.animate(HudManager.pingAnim, (float)HudManager.ping(mc));
                   String username = mc.getSession() != null ? mc.getSession().getUsername() : "Player";
-                  String fps = Math.round(HudManager.fpsAnim) + " fps";
-                  String time = LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm")) + " time";
-                  String xyz = String.format(Locale.ROOT, "xyz: %.1f, %.1f, %.1f", HudManager.xAnim, HudManager.yAnim, HudManager.zAnim);
-                  String speed = String.format(Locale.ROOT, "b/s: %.1f", HudManager.speedAnim);
-                  String ping = "ping: " + Math.round(HudManager.pingAnim);
-                  int usernameWidth = renderer.textWidth(mc.textRenderer, username) + 20;
-                  int fpsWidth = renderer.textWidth(mc.textRenderer, fps) + 20;
-                  int timeWidth = renderer.textWidth(mc.textRenderer, time) + 20;
-                  int speedWidth = renderer.textWidth(mc.textRenderer, speed) + 14;
-                  this.width = Math.max(154, Math.max(renderer.textWidth(mc.textRenderer, xyz) + 12, usernameWidth + fpsWidth + 34));
-                  this.height = 34;
-                  HudManager.drawPill(renderer, this.x, this.y, 22, 15);
-                  HudManager.drawPill(renderer, this.x + 25, this.y, usernameWidth, 15);
-                  HudManager.drawPill(renderer, this.x + 28 + usernameWidth, this.y, fpsWidth, 15);
-                  HudManager.drawPill(renderer, this.x, this.y + 16, timeWidth, 15);
-                  renderer.centeredText(mc.textRenderer, "M", this.x + 11, this.y + 4, -1, false);
-                  renderer.text(mc.textRenderer, username, this.x + 35, this.y + 5, -1, false);
-                  renderer.text(mc.textRenderer, fps, this.x + 38 + usernameWidth, this.y + 5, -1, false);
-                  renderer.text(mc.textRenderer, time, this.x + 8, this.y + 21, -1, false);
+                  String fps = Math.round(HudManager.fpsAnim) + " FPS";
+                  String time = LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm"));
+                  String xyz = String.format(Locale.ROOT, "XYZ %.1f %.1f %.1f", HudManager.xAnim, HudManager.yAnim, HudManager.zAnim);
+                  String speed = String.format(Locale.ROOT, "Speed %.1f b/s", HudManager.speedAnim);
+                  String ping = "Ping " + Math.round(HudManager.pingAnim);
+                  String info = fps + "  " + ping + "  " + time;
+                  this.width = Math.max(206, Math.max(renderer.textWidth(mc.textRenderer, xyz) + 26, renderer.textWidth(mc.textRenderer, info) + 48));
+                  this.height = 50;
+                  HudStyle.panel(renderer, (float)this.x, (float)this.y, (float)this.width, (float)this.height, 10.0F, 235);
+                  renderer.circle((float)(this.x + 18), (float)(this.y + 18), 10.0F, HudStyle.withAlpha(HudStyle.ACCENT, 185));
+                  renderer.centeredText(mc.textRenderer, "M", this.x + 18, this.y + 14, -1, false);
+                  renderer.text(mc.textRenderer, username, this.x + 35, this.y + 9, -1, false);
+                  renderer.text(mc.textRenderer, info, this.x + 35, this.y + 22, HudStyle.MUTED, false);
+                  HudStyle.row(renderer, (float)(this.x + 8), (float)(this.y + 35), (float)(this.width - 16), 10.0F, 170);
+                  renderer.text(mc.textRenderer, xyz, this.x + 13, this.y + 36, -1, false);
                   int baseY = mc.getWindow().getScaledHeight() - 25;
-                  renderer.text(mc.textRenderer, xyz, 2, baseY, -1, false);
-                  renderer.text(mc.textRenderer, speed, 2, baseY - 10, -1, false);
-                  renderer.text(mc.textRenderer, ping, mc.getWindow().getScaledWidth() - renderer.textWidth(mc.textRenderer, ping) - 3, baseY - 10, -1, false);
+                  renderer.text(mc.textRenderer, speed, 5, baseY - 11, -1, false);
+                  renderer.text(mc.textRenderer, ping, mc.getWindow().getScaledWidth() - renderer.textWidth(mc.textRenderer, ping) - 5, baseY - 11, -1, false);
                }
             }
          }
       );
-      elements.add(new PotionHudElement(10, 48));
-      elements.add(new TargetHudElement(10, 112));
-      elements.add(new KeybindsHudElement(10, 178));
+      elements.add(new PotionHudElement(10, 68));
+      elements.add(new TargetHudElement(10, 134));
+      elements.add(new KeybindsHudElement(10, 198));
    }
 
    public static void render(DrawContext context, float tickDelta) {
@@ -109,11 +104,6 @@ public class HudManager {
       for (HudElement el : elements) {
          el.mouseReleased(button);
       }
-   }
-
-   private static void drawPill(Mre2D renderer, int x, int y, int width, int height) {
-      renderer.blur((float)x, (float)y, (float)width, (float)height, 5.0F, 10.0F, 1728053247);
-      renderer.roundedRect((float)x, (float)y, (float)width, (float)height, 5.0F, -1442840576);
    }
 
    private static float animate(float current, float target) {

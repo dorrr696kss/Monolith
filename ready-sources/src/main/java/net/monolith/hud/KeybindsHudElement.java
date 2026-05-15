@@ -31,21 +31,18 @@ public class KeybindsHudElement extends HudElement {
       this.alphaAnim = RenderUtils.lerp(this.alphaAnim, visible ? 1.0F : 0.0F, 0.3F * Math.max(1.0F, tickDelta));
       if (!(this.alphaAnim < 0.02F) || visible) {
          int rows = Math.max(active.size(), edit ? 1 : 0);
-         float targetWidth = Math.max(100.0F, this.maxWidth(renderer, mc, active, edit));
-         float targetHeight = 20.0F + (float)rows * 17.0F;
+         float targetWidth = Math.max(118.0F, this.maxWidth(renderer, mc, active, edit));
+         float targetHeight = 28.0F + (float)rows * 18.0F;
          this.widthAnim = RenderUtils.lerp(this.widthAnim, targetWidth, 0.2F * Math.max(1.0F, tickDelta));
          this.heightAnim = RenderUtils.lerp(this.heightAnim, targetHeight, 0.2F * Math.max(1.0F, tickDelta));
          this.width = (int)this.widthAnim;
          this.height = (int)this.heightAnim;
          int alpha = Math.min(255, Math.max(0, (int)(this.alphaAnim * 255.0F)));
-         int bg = (int)(170.0F * this.alphaAnim) << 24;
          int text = alpha << 24 | 16777215;
          int bind = alpha << 24 | 15422825;
-         renderer.blur((float)this.x, (float)this.y, (float)this.width, 16.0F, 5.0F, 10.0F, 1728053247);
-         renderer.roundedRect((float)this.x, (float)this.y, (float)this.width, 16.0F, 5.0F, bg);
-         renderer.text(mc.textRenderer, "C", this.x + 6, this.y + 5, text, false);
-         renderer.text(mc.textRenderer, "KeyBinds", this.x + 24, this.y + 5, text, false);
-         int rowY = this.y + 20;
+         HudStyle.panel(renderer, (float)this.x, (float)this.y, (float)this.width, (float)this.height, 9.0F, alpha);
+         HudStyle.header(renderer, mc, "K", "Keybinds", this.x + 4, this.y + 3, this.width - 8, alpha);
+         int rowY = this.y + 29;
          if (active.isEmpty() && edit) {
             this.renderRow(renderer, mc, "AttackAura", "R", rowY, text, bind);
          } else {
@@ -58,12 +55,12 @@ public class KeybindsHudElement extends HudElement {
    }
 
    private void renderRow(Mre2D renderer, MinecraftClient mc, String moduleName, String keyName, int rowY, int textColor, int bindColor) {
-      renderer.blur((float)this.x, (float)(rowY - 3), (float)this.width, 15.0F, 5.0F, 10.0F, 1728053247);
-      renderer.roundedRect((float)this.x, (float)(rowY - 3), (float)this.width, 15.0F, 5.0F, textColor & -1442840576);
-      renderer.text(mc.textRenderer, moduleName, this.x + 5, rowY, textColor, false);
-      int dividerX = this.x + this.width - Math.max(34, renderer.textWidth(mc.textRenderer, keyName) + 14);
-      renderer.roundedRect((float)dividerX, (float)(rowY - 1), 1.0F, 11.0F, 1.0F, textColor);
-      renderer.text(mc.textRenderer, keyName, this.x + this.width - renderer.textWidth(mc.textRenderer, keyName) - 6, rowY, bindColor, false);
+      HudStyle.row(renderer, (float)(this.x + 5), (float)(rowY - 3), (float)(this.width - 10), 14.0F, 150);
+      renderer.text(mc.textRenderer, moduleName, this.x + 11, rowY, textColor, false);
+      int keyWidth = renderer.textWidth(mc.textRenderer, keyName) + 12;
+      int keyX = this.x + this.width - keyWidth - 8;
+      renderer.roundedRect((float)keyX, (float)(rowY - 2), (float)keyWidth, 12.0F, 6.0F, HudStyle.withAlpha(HudStyle.ACCENT, 95));
+      renderer.centeredText(mc.textRenderer, keyName, keyX + keyWidth / 2, rowY, bindColor, false);
    }
 
    private List<Module> activeModules() {
@@ -80,13 +77,13 @@ public class KeybindsHudElement extends HudElement {
    }
 
    private float maxWidth(Mre2D renderer, MinecraftClient mc, List<Module> active, boolean edit) {
-      float max = (float)(renderer.textWidth(mc.textRenderer, "KeyBinds") + 32);
+      float max = (float)(renderer.textWidth(mc.textRenderer, "Keybinds") + 50);
       if (active.isEmpty() && edit) {
-         return Math.max(max, (float)(renderer.textWidth(mc.textRenderer, "AttackAura") + renderer.textWidth(mc.textRenderer, "R") + 36));
+         return Math.max(max, (float)(renderer.textWidth(mc.textRenderer, "AttackAura") + renderer.textWidth(mc.textRenderer, "R") + 52));
       } else {
          for (Module module : active) {
             String keyName = this.bindName(this.normalize(module.keyCode));
-            max = Math.max(max, (float)(renderer.textWidth(mc.textRenderer, module.name) + renderer.textWidth(mc.textRenderer, keyName) + 36));
+            max = Math.max(max, (float)(renderer.textWidth(mc.textRenderer, module.name) + renderer.textWidth(mc.textRenderer, keyName) + 58));
          }
 
          return max + 6.0F;

@@ -28,10 +28,7 @@ public abstract class HudElement {
       }
 
       Mre2D renderer = Mre2D.of(context);
-      renderer.blur(
-         (float)(this.x - 3), (float)(this.y - 3), (float)(this.width + 6), (float)(this.height + 6), 4.0F, 14.0F, this.dragging ? 1883898080 : 1291845631
-      );
-      renderer.roundedOutline((float)(this.x - 3), (float)(this.y - 3), (float)(this.width + 6), (float)(this.height + 6), 4.0F, 1.0F, -1442781697);
+      HudStyle.panel(renderer, (float)(this.x - 4), (float)(this.y - 4), (float)(this.width + 8), (float)(this.height + 8), 8.0F, this.dragging ? 235 : 165);
       this.render(context, 0.0F);
    }
 

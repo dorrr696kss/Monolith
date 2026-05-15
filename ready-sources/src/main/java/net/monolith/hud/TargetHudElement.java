@@ -52,28 +52,25 @@ public class TargetHudElement extends HudElement {
             renderer.scale(this.openAnim, this.openAnim, 1.0F);
             renderer.translate(-((float)this.x + (float)this.width / 2.0F), -((float)this.y + (float)this.height / 2.0F), 0.0F);
             int alpha = Math.min(255, Math.max(0, (int)(this.openAnim * 255.0F)));
-            int bg = (int)(155.0F * this.openAnim) << 24;
             int textColor = alpha << 24 | 16777215;
-            renderer.blur((float)this.x, (float)this.y, (float)this.width, (float)this.height, 8.0F, 14.0F, 1728053247);
-            renderer.roundedRect((float)this.x, (float)this.y, (float)this.width, (float)this.height, 8.0F, bg);
-            renderer.roundedOutline((float)this.x, (float)this.y, (float)this.width, (float)this.height, 8.0F, 1.0F, Math.min(65, alpha) << 24 | 4849888);
-            this.drawAvatar(context, renderer, entity, this.x + 7, this.y + 7, 40, alpha);
-            renderer.text(mc.textRenderer, this.trim(renderer, mc, name, 86), this.x + 55, this.y + 9, textColor, false);
-            renderer.text(mc.textRenderer, "HP: " + ((int)health + (int)entity.getAbsorptionAmount()), this.x + 55, this.y + 23, textColor, false);
-            renderer.roundedRect((float)(this.x + 55), (float)(this.y + 40), (float)(this.width - 64), 6.0F, 3.0F, -1442840576);
-            renderer.roundedRect((float)(this.x + 55), (float)(this.y + 40), (float)(this.width - 64) * this.healthAnim, 6.0F, 3.0F, -7459358);
+            HudStyle.panel(renderer, (float)this.x, (float)this.y, (float)this.width, (float)this.height, 10.0F, alpha);
+            this.drawAvatar(context, renderer, entity, this.x + 8, this.y + 8, 38, alpha);
+            renderer.text(mc.textRenderer, this.trim(renderer, mc, name, 88), this.x + 54, this.y + 10, textColor, false);
+            renderer.text(mc.textRenderer, "Health " + ((int)health + (int)entity.getAbsorptionAmount()), this.x + 54, this.y + 23, HudStyle.withAlpha(HudStyle.MUTED, alpha), false);
+            renderer.roundedRect((float)(this.x + 54), (float)(this.y + 40), (float)(this.width - 64), 6.0F, 3.0F, HudStyle.withAlpha(0xFF121827, Math.min(150, alpha)));
+            renderer.roundedRect((float)(this.x + 54), (float)(this.y + 40), (float)(this.width - 64) * this.healthAnim, 6.0F, 3.0F, HudStyle.withAlpha(0xFF3BF0D2, alpha));
             if (this.absorptionAnim > 0.01F) {
                renderer.roundedRect(
-                  (float)(this.x + 55),
+                  (float)(this.x + 54),
                   (float)(this.y + 40),
                   Math.min((float)(this.width - 64), (float)(this.width - 64) * (this.healthAnim + this.absorptionAnim)),
                   6.0F,
                   3.0F,
-                  -1711287962
+                  HudStyle.withAlpha(0xFFFFD166, alpha)
                );
             }
 
-            renderer.roundedRect((float)(this.x + 55), (float)(this.y + 40), (float)(this.width - 64) * this.healthAnim, 6.0F, 3.0F, 1426063360);
+            renderer.roundedRect((float)(this.x + 54), (float)(this.y + 40), (float)(this.width - 64) * this.healthAnim, 2.0F, 2.0F, HudStyle.withAlpha(0xFFFFFFFF, Math.min(95, alpha)));
             renderer.pop();
          }
       }
@@ -93,14 +90,14 @@ public class TargetHudElement extends HudElement {
    }
 
    private void drawAvatar(DrawContext context, Mre2D renderer, LivingEntity entity, int x, int y, int size, int alpha) {
-      renderer.roundedRect((float)x, (float)y, (float)size, (float)size, 6.0F, Math.min(140, alpha) << 24 | 1182493);
-      renderer.roundedOutline((float)x, (float)y, (float)size, (float)size, 6.0F, 1.0F, Math.min(95, alpha) << 24 | 58879);
+      renderer.roundedRect((float)x, (float)y, (float)size, (float)size, 8.0F, HudStyle.withAlpha(HudStyle.ACCENT, Math.min(80, alpha)));
+      renderer.roundedOutline((float)x, (float)y, (float)size, (float)size, 8.0F, 1.0F, HudStyle.withAlpha(HudStyle.ACCENT, Math.min(150, alpha)));
       if (entity instanceof AbstractClientPlayerEntity player) {
          context.drawTexture(RenderLayer::getGuiTextured, player.getSkinTextures().texture(), x + 4, y + 4, 8.0F, 8.0F, size - 8, size - 8, 64, 64);
       } else {
          String shortName = entity.getName().getString();
          String letter = shortName.isEmpty() ? "?" : shortName.substring(0, 1).toUpperCase(Locale.ROOT);
-         renderer.circle((float)x + (float)size / 2.0F, (float)y + (float)size / 2.0F, (float)size / 2.0F - 7.0F, Math.min(210, alpha) << 24 | 9317858);
+         renderer.circle((float)x + (float)size / 2.0F, (float)y + (float)size / 2.0F, (float)size / 2.0F - 7.0F, HudStyle.withAlpha(HudStyle.ACCENT_2, Math.min(210, alpha)));
          renderer.centeredText(MinecraftClient.getInstance().textRenderer, letter, x + size / 2, y + 16, alpha << 24 | 16777215, false);
       }
 
