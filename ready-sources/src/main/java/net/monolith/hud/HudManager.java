@@ -47,15 +47,15 @@ public class HudManager {
                   String speed = String.format(Locale.ROOT, "Speed %.1f b/s", HudManager.speedAnim);
                   String ping = "Ping " + Math.round(HudManager.pingAnim);
                   String info = fps + "  " + ping + "  " + time;
-                  this.width = Math.max(206, Math.max(renderer.textWidth(mc.textRenderer, xyz) + 26, renderer.textWidth(mc.textRenderer, info) + 48));
-                  this.height = 50;
+                  this.width = Math.max(214, Math.max(renderer.textWidth(mc.textRenderer, xyz) + 30, renderer.textWidth(mc.textRenderer, info) + 52));
+                  this.height = 54;
                   HudStyle.panel(renderer, (float)this.x, (float)this.y, (float)this.width, (float)this.height, 10.0F, 235);
                   renderer.circle((float)(this.x + 18), (float)(this.y + 18), 10.0F, HudStyle.withAlpha(HudStyle.ACCENT, 185));
                   renderer.centeredText(mc.textRenderer, "M", this.x + 18, this.y + 14, -1, false);
                   renderer.text(mc.textRenderer, username, this.x + 35, this.y + 9, -1, false);
                   renderer.text(mc.textRenderer, info, this.x + 35, this.y + 22, HudStyle.MUTED, false);
-                  HudStyle.row(renderer, (float)(this.x + 8), (float)(this.y + 35), (float)(this.width - 16), 10.0F, 170);
-                  renderer.text(mc.textRenderer, xyz, this.x + 13, this.y + 36, -1, false);
+                  HudStyle.row(renderer, (float)(this.x + 8), (float)(this.y + 36), (float)(this.width - 16), 13.0F, 180);
+                  renderer.text(mc.textRenderer, xyz, this.x + 13, this.y + 39, -1, false);
                   int baseY = mc.getWindow().getScaledHeight() - 25;
                   renderer.text(mc.textRenderer, speed, 5, baseY - 11, -1, false);
                   renderer.text(mc.textRenderer, ping, mc.getWindow().getScaledWidth() - renderer.textWidth(mc.textRenderer, ping) - 5, baseY - 11, -1, false);
@@ -63,9 +63,9 @@ public class HudManager {
             }
          }
       );
-      elements.add(new PotionHudElement(10, 68));
-      elements.add(new TargetHudElement(10, 134));
-      elements.add(new KeybindsHudElement(10, 198));
+      elements.add(new PotionHudElement(10, 72));
+      elements.add(new TargetHudElement(10, 138));
+      elements.add(new KeybindsHudElement(10, 202));
    }
 
    public static void render(DrawContext context, float tickDelta) {
