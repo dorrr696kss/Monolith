@@ -61,7 +61,7 @@ public final class TargetEsp {
             lastTarget = null;
          } else if (lastTarget != null) {
             float tickDelta = context.tickCounter().getTickDelta(true);
-            if ("Призраки".equals(module.currentMode)) {
+            if ("Души".equals(module.currentMode)) {
                drawGhosts(context.matrixStack(), context.camera(), tickDelta);
             } else {
                drawMarker(context.matrixStack(), context.camera(), tickDelta);

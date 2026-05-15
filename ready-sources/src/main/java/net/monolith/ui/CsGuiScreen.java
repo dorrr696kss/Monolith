@@ -22,6 +22,7 @@ public class CsGuiScreen extends Screen {
    private int scroll;
    private int settingsScroll;
    private int accent = -16718337;
+   private long descriptionStart = System.currentTimeMillis();
    private static final int W = 448;
    private static final int H = 286;
    private static final int SIDE_W = 90;
@@ -108,7 +109,7 @@ public class CsGuiScreen extends Screen {
          r.roundedOutline((float)mx, (float)my, (float)colW, 40.0F, 8.0F, 0.7F, module.enabled ? this.withAlpha(this.accent, 115) : 318767103);
          r.circle((float)(mx + 15), (float)(my + 20), 6.0F, module.enabled ? this.accent : -14407630);
          r.text(this.textRenderer, this.trim(module.name, 12), mx + 28, my + 10, module.enabled ? -1 : -4932664, false);
-         r.text(this.textRenderer, this.hasSettings(module) ? "settings" : "toggle", mx + 28, my + 24, -9867139, false);
+         this.renderDescription(r, module.description, mx + 28, my + 24, colW - 46);
          if (this.hasSettings(module)) {
             r.text(this.textRenderer, ">", mx + colW - 14, my + 16, this.activeSettingsModule == module ? this.accent : -10590604, false);
          }
@@ -263,7 +264,11 @@ public class CsGuiScreen extends Screen {
          int my = left ? y1 : y2;
          if (this.inside(mouseX, mouseY, mx, my, colW, 40)) {
             if (button == 0) {
-               module.toggle();
+               if (this.hasSettings(module) && mouseX >= (double)(mx + colW - 24)) {
+                  this.activeSettingsModule = this.activeSettingsModule == module ? null : module;
+               } else {
+                  module.toggle();
+               }
             } else if (button == 1 && this.hasSettings(module)) {
                this.activeSettingsModule = this.activeSettingsModule == module ? null : module;
             } else if (button == 2) {
@@ -414,6 +419,23 @@ public class CsGuiScreen extends Screen {
 
    private boolean hasSettings(Module module) {
       return !module.modes.isEmpty() || !module.settings.isEmpty() || !module.optionSettings.isEmpty();
+   }
+
+   private void renderDescription(Mre2D r, String description, int x, int y, int width) {
+      String text = description == null ? "" : description;
+      int textWidth = this.textRenderer.getWidth(text);
+      if (textWidth <= width) {
+         r.text(this.textRenderer, text, x, y, -9867139, false);
+      } else {
+         int start = (int)((System.currentTimeMillis() - this.descriptionStart) / 180L % (long)Math.max(1, text.length()));
+         String loop = text + "   " + text;
+         String banner = loop.substring(start, Math.min(loop.length(), start + text.length()));
+         while (this.textRenderer.getWidth(banner) > width && banner.length() > 1) {
+            banner = banner.substring(0, banner.length() - 1);
+         }
+
+         r.text(this.textRenderer, banner, x, y, -9867139, false);
+      }
    }
 
    private void updateDraggingSetting(double mouseX, int x, Module.Setting setting) {

@@ -32,8 +32,8 @@ import net.monolith.visual.Nametags;
 import net.monolith.visual.Prediction;
 import net.monolith.visual.StorageEsp;
 import net.monolith.visual.TargetEsp;
-import net.monolith.visual.TargetGlow;
 import net.monolith.visual.Trails;
+import net.monolith.visual.WorldParticles;
 import net.monolith.visual.WorldRender;
 import org.lwjgl.glfw.GLFW;
 import org.slf4j.Logger;
@@ -53,7 +53,7 @@ public class Monolith implements ClientModInitializer {
          OptimizationManager.tick(client);
          WorldRender.tick(client);
          TargetEsp.tick();
-         TargetGlow.tick();
+         WorldParticles.tick(client);
          AttackAura.tick(client);
          RotationManager.tick();
          ConfigManager.autoSaveTick();
@@ -73,9 +73,9 @@ public class Monolith implements ClientModInitializer {
       WorldRenderEvents.LAST.register((Last)context -> {
          Esp.render(context);
          TargetEsp.render(context);
-         TargetGlow.render(context);
          Trails.render(context);
          Prediction.render(context);
+         WorldParticles.render(context);
          StorageEsp.render(context);
          Nametags.render(context);
       });

@@ -16,11 +16,14 @@ import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.HitResult.Type;
 import net.minecraft.world.RaycastContext.FluidHandling;
 import net.minecraft.world.RaycastContext.ShapeType;
+import net.minecraft.util.Identifier;
 import net.monolith.module.Module;
 import net.monolith.module.ModuleManager;
 import net.monolith.render.Render3D;
 
 public final class Prediction {
+   private static final Identifier GHOST = Identifier.of("monolith", "textures/ghost.png");
+
    private Prediction() {
    }
 
@@ -36,7 +39,7 @@ public final class Prediction {
                if (data != null) {
                   Prediction.Impact impact = simulate(client, entity, entity.getPos(), entity.getVelocity(), data.gravity, data.drag);
                   if (impact != null) {
-                     draw(renderer, impact, data.color);
+                     draw(renderer, impact, data.color, entity.getPos(), entity.getVelocity(), data.gravity, data.drag);
                   }
                }
             }
@@ -48,7 +51,7 @@ public final class Prediction {
                client, client.player, client.player.getEyePos().add(0.0, -0.1, 0.0), held.velocity, held.gravity, held.drag
             );
             if (impact != null) {
-               draw(renderer, impact, held.color);
+               draw(renderer, impact, held.color, client.player.getEyePos().add(0.0, -0.1, 0.0), held.velocity, held.gravity, held.drag);
             }
          }
       }
@@ -96,14 +99,14 @@ public final class Prediction {
          Vec3d next = pos.add(vel);
          BlockHitResult block = client.world.raycast(new RaycastContext(pos, next, ShapeType.COLLIDER, FluidHandling.NONE, client.player));
          if (block.getType() != Type.MISS) {
-            return new Prediction.Impact(block.getPos(), true);
+            return new Prediction.Impact(block.getPos(), true, (float)(i + 1) / 20.0F, i + 1);
          }
 
          Box box = Box.of(next, 0.35, 0.35, 0.35);
 
          for (Entity entity : client.world.getOtherEntities(source, box, entityx -> entityx.isAlive() && entityx.canHit())) {
             if (entity != client.player) {
-               return new Prediction.Impact(entity.getPos().add(0.0, (double)entity.getHeight() * 0.5, 0.0), false);
+               return new Prediction.Impact(entity.getPos().add(0.0, (double)entity.getHeight() * 0.5, 0.0), false, (float)(i + 1) / 20.0F, i + 1);
             }
          }
 
@@ -117,12 +120,30 @@ public final class Prediction {
       return null;
    }
 
-   private static void draw(Render3D renderer, Prediction.Impact impact, int color) {
-      renderer.ring(impact.pos, impact.block ? 0.55F : 0.75F, 0.03F, color);
-      renderer.star(impact.pos.add(0.0, impact.block ? 0.12 : 0.0, 0.0), 0.18F, color);
+   private static void draw(Render3D renderer, Prediction.Impact impact, int color, Vec3d start, Vec3d velocity, double gravity, double drag) {
+      Vec3d marker = impact.pos.add(0.0, impact.block ? 0.14 : 0.0, 0.0);
+      drawPath(renderer, start, velocity, gravity, drag, impact.ticks, withAlpha(color, 175));
+      renderer.ring(impact.pos, impact.block ? 0.58F : 0.75F, 0.03F, withAlpha(color, 220));
+      renderer.billboardAdditive(GHOST, marker.add(0.0, 0.34, 0.0), 0.46F, (float)(System.currentTimeMillis() % 3600L) / 3600.0F, -1);
+      renderer.nametag(marker.add(0.0, 0.78, 0.0), String.format("%.1fs", impact.seconds), 0.018F, -1, 1140850688);
    }
 
-   private static record Impact(Vec3d pos, boolean block) {
+   private static int withAlpha(int color, int alpha) {
+      return Math.max(0, Math.min(255, alpha)) << 24 | color & 16777215;
+   }
+
+   private static void drawPath(Render3D renderer, Vec3d start, Vec3d velocity, double gravity, double drag, int ticks, int color) {
+      Vec3d pos = start;
+      Vec3d vel = velocity;
+      for (int i = 0; i < ticks; i++) {
+         Vec3d next = pos.add(vel);
+         renderer.line(pos, next, color);
+         pos = next;
+         vel = vel.multiply(drag).add(0.0, -gravity, 0.0);
+      }
+   }
+
+   private static record Impact(Vec3d pos, boolean block, float seconds, int ticks) {
    }
 
    private static record PredictionData(Vec3d velocity, double gravity, double drag, int color) {

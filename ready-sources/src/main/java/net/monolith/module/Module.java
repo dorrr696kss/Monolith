@@ -12,6 +12,7 @@ import java.util.Set;
 public class Module {
    public String name;
    public String category;
+   public String description;
    public boolean enabled;
    public List<String> modes = new ArrayList<>();
    public String currentMode = "";
@@ -29,7 +30,13 @@ public class Module {
    public Module(String name, String category) {
       this.name = name;
       this.category = category;
+      this.description = "No description";
       this.enabled = false;
+   }
+
+   public Module description(String description) {
+      this.description = description;
+      return this;
    }
 
    public void toggle() {
