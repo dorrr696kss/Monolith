@@ -109,7 +109,7 @@ public class CsGuiScreen extends Screen {
          r.roundedOutline((float)mx, (float)my, (float)colW, 40.0F, 8.0F, 0.7F, module.enabled ? this.withAlpha(this.accent, 115) : 318767103);
          r.circle((float)(mx + 15), (float)(my + 20), 6.0F, module.enabled ? this.accent : -14407630);
          r.text(this.textRenderer, this.trim(module.name, 12), mx + 28, my + 10, module.enabled ? -1 : -4932664, false);
-         this.renderDescription(r, module.description, mx + 28, my + 24, colW - 46);
+         this.renderDescription(r, module.description, mx + 28, my + 24, colW - 46, x - 4, y - 4, x + width + 4, y + height + 6);
          if (this.hasSettings(module)) {
             r.text(this.textRenderer, ">", mx + colW - 14, my + 16, this.activeSettingsModule == module ? this.accent : -10590604, false);
          }
@@ -421,20 +421,19 @@ public class CsGuiScreen extends Screen {
       return !module.modes.isEmpty() || !module.settings.isEmpty() || !module.optionSettings.isEmpty();
    }
 
-   private void renderDescription(Mre2D r, String description, int x, int y, int width) {
+   private void renderDescription(Mre2D r, String description, int x, int y, int width, int clipX1, int clipY1, int clipX2, int clipY2) {
       String text = description == null ? "" : description;
       int textWidth = this.textRenderer.getWidth(text);
       if (textWidth <= width) {
          r.text(this.textRenderer, text, x, y, -9867139, false);
       } else {
-         int start = (int)((System.currentTimeMillis() - this.descriptionStart) / 180L % (long)Math.max(1, text.length()));
-         String loop = text + "   " + text;
-         String banner = loop.substring(start, Math.min(loop.length(), start + text.length()));
-         while (this.textRenderer.getWidth(banner) > width && banner.length() > 1) {
-            banner = banner.substring(0, banner.length() - 1);
-         }
-
-         r.text(this.textRenderer, banner, x, y, -9867139, false);
+         int gap = 28;
+         int loopWidth = textWidth + gap;
+         int offset = (int)((System.currentTimeMillis() - this.descriptionStart) / 18L % (long)loopWidth);
+         r.scissor(x, y - 1, x + width, y + 10);
+         r.text(this.textRenderer, text, x - offset, y, -9867139, false);
+         r.text(this.textRenderer, text, x - offset + loopWidth, y, -9867139, false);
+         r.scissor(clipX1, clipY1, clipX2, clipY2);
       }
    }
 

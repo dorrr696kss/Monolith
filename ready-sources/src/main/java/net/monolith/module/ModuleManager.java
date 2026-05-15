@@ -60,9 +60,9 @@ public class ModuleManager {
       Module storageEsp = new Module("StorageESP", "Visuals").description("Highlights chests and other containers");
       storageEsp.addSetting("Range", 48.0, 12.0, 128.0, 4.0);
       modules.add(storageEsp);
-      Module worldParticles = new Module("World Particles", "Visuals").description("Spawns falling stars that face and follow your player");
-      worldParticles.addSetting("Amount", 22.0, 6.0, 60.0, 2.0);
-      worldParticles.addSetting("Radius", 7.0, 3.0, 16.0, 1.0);
+      Module worldParticles = new Module("World Particles", "Visuals").description("Spawns many falling stars that always face you");
+      worldParticles.addSetting("Amount", 70.0, 20.0, 140.0, 5.0);
+      worldParticles.addSetting("Radius", 11.0, 5.0, 24.0, 1.0);
       modules.add(worldParticles);
       modules.add(new Module("Sprint", "Movement").description("Keeps sprint enabled while moving"));
       modules.add(new Module("NoSlow", "Movement").description("Reduces item-use slowdown"));

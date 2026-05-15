@@ -28,7 +28,7 @@ public final class WorldParticles {
          return;
       }
 
-      int amount = Math.max(1, (int)Math.round(module.getSettingValue("Amount", 22.0)));
+      int amount = Math.max(1, (int)Math.round(module.getSettingValue("Amount", 70.0)));
       double radius = module.getSettingValue("Radius", 7.0);
       while (PARTICLES.size() < amount) {
          PARTICLES.add(spawn(client.player.getPos(), radius));
@@ -38,12 +38,10 @@ public final class WorldParticles {
       Vec3d player = client.player.getPos().add(0.0, 0.9, 0.0);
       while (iterator.hasNext()) {
          WorldParticles.Particle particle = iterator.next();
-         Vec3d follow = player.subtract(particle.pos).normalize().multiply(0.012);
-         particle.velocity = particle.velocity.multiply(0.92).add(follow).add(0.0, -0.006, 0.0);
+         particle.velocity = particle.velocity.add(0.0, -0.0025, 0.0);
          particle.pos = particle.pos.add(particle.velocity);
          particle.age++;
-         particle.rotation += 0.055F;
-         if (particle.age > particle.life || particle.pos.y < player.y - 2.4 || particle.pos.squaredDistanceTo(player) > radius * radius * 5.0) {
+         if (particle.age > particle.life || particle.pos.y < player.y - 1.3 || horizontalDistanceSq(particle.pos, player) > radius * radius * 2.6) {
             iterator.remove();
          }
       }
@@ -57,17 +55,23 @@ public final class WorldParticles {
             float fadeIn = MathHelper.clamp((float)particle.age / 18.0F, 0.0F, 1.0F);
             float fadeOut = MathHelper.clamp(1.0F - (float)particle.age / (float)particle.life, 0.0F, 1.0F);
             int alpha = (int)(210.0F * Math.min(fadeIn, fadeOut));
-            renderer.billboardAdditive(STAR, particle.pos, particle.size, particle.rotation, alpha << 24 | 16777215);
+            renderer.billboardAdditive(STAR, particle.pos, particle.size, 0.0F, alpha << 24 | 16777215);
          }
       }
    }
 
    private static WorldParticles.Particle spawn(Vec3d center, double radius) {
       double angle = RANDOM.nextDouble() * Math.PI * 2.0;
-      double distance = 1.0 + RANDOM.nextDouble() * radius;
-      Vec3d pos = center.add(Math.cos(angle) * distance, 2.4 + RANDOM.nextDouble() * 3.2, Math.sin(angle) * distance);
-      Vec3d velocity = new Vec3d((RANDOM.nextDouble() - 0.5) * 0.03, -0.025 - RANDOM.nextDouble() * 0.035, (RANDOM.nextDouble() - 0.5) * 0.03);
-      return new WorldParticles.Particle(pos, velocity, 0.28F + RANDOM.nextFloat() * 0.24F, RANDOM.nextInt(150) + 90);
+      double distance = 2.2 + RANDOM.nextDouble() * radius;
+      Vec3d pos = center.add(Math.cos(angle) * distance, 7.0 + RANDOM.nextDouble() * 6.0, Math.sin(angle) * distance);
+      Vec3d velocity = new Vec3d((RANDOM.nextDouble() - 0.5) * 0.012, -0.045 - RANDOM.nextDouble() * 0.035, (RANDOM.nextDouble() - 0.5) * 0.012);
+      return new WorldParticles.Particle(pos, velocity, 0.34F + RANDOM.nextFloat() * 0.28F, RANDOM.nextInt(190) + 140);
+   }
+
+   private static double horizontalDistanceSq(Vec3d first, Vec3d second) {
+      double dx = first.x - second.x;
+      double dz = first.z - second.z;
+      return dx * dx + dz * dz;
    }
 
    private static final class Particle {
@@ -76,7 +80,6 @@ public final class WorldParticles {
       private final float size;
       private final int life;
       private int age;
-      private float rotation;
 
       private Particle(Vec3d pos, Vec3d velocity, float size, int life) {
          this.pos = pos;
